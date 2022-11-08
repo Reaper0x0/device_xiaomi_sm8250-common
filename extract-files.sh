@@ -61,6 +61,15 @@ fi
 if [ -z "${ONLY_TARGET}" ]; then
     # Initialize the helper for common device
     setup_vendor "${DEVICE_COMMON}" "${VENDOR}" "${ANDROID_ROOT}" true "${CLEAN_VENDOR}"
+function blob_fixup() {
+    case "${1}" in
+        vendor/etc/media_codecs_kona.xml)
+            sed -i "/media_codecs_dolby_audio.xml/d" "${2}"
+            ;;
+        vendor/bin/hw/vendor.xiaomi.hardware.vibratorfeature.service)
+            "${PATCHELF}" --replace-needed "libutils.so" "libutils-v32.so" "${2}"
+            ;;
+    esac
 
     extract "${MY_DIR}/proprietary-files.txt" "${SRC}" "${KANG}" --section "${SECTION}"
 fi
